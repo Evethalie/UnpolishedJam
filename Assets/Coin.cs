@@ -14,7 +14,7 @@ public class Coin : MonoBehaviour
 
     private void Update()
     {
-        SineFloat();
+       // SineFloat();
     }
 
     private void SineFloat()

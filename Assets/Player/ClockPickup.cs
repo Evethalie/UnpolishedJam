@@ -5,7 +5,7 @@ public class ClockPickup : MonoBehaviour
     private float timeOffset;
     [SerializeField] private float amplitude = 0.5f;    
     [SerializeField] private float frequency = 2f;
-    [SerializeField] private int num;
+    [SerializeField] private float num;
 
     private void Start()
     {
@@ -34,7 +34,7 @@ public class ClockPickup : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            UIManager.instance.levelTimer += 2f;
+            UIManager.instance.levelTimer += num;
             Destroy(gameObject);
         }
     }
