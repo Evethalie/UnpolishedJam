@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7577382455992007880}
   - component: {fileID: 6215692962831784788}
+  - component: {fileID: 4973067972984287154}
   m_Layer: 0
   m_Name: Coin
   m_TagString: Untagged
@@ -87,3 +88,18 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &4973067972984287154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3193425316884002602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be2e9fd1f0c0cf34ca0407696ff5e78d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  amplitude: 0.5
+  frequency: 2
+  num: 0

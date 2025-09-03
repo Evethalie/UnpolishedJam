@@ -42,6 +42,7 @@ public class PlayerRespawn : MonoBehaviour
 
    public void TotalRespawn()
    {
+      GameManager.instance.deaths++;
       deathFeedback.PlayFeedbacks();
       SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
    }
