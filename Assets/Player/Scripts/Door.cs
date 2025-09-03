@@ -14,14 +14,12 @@ public class Door : MonoBehaviour
 
    public void Open()
    {
-      animator.enabled = true;
-      animator.SetBool("Open", true);
+     gameObject.SetActive(false);
    }
 
    public IEnumerator Close()
    {
-      animator.SetBool("Open", false);
-      yield return new WaitForSeconds(0.3f);
-      animator.enabled = false;
+      gameObject.SetActive(true);
+      yield return null;
    }
 }

@@ -42,6 +42,7 @@ public class PlayerRespawn : MonoBehaviour
 
    public void TotalRespawn()
    {
+      GameManager.instance.deaths++;
       deathFeedback.PlayFeedbacks();
       SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
    }
@@ -58,7 +59,7 @@ public class PlayerRespawn : MonoBehaviour
       cloneFeedback?.PlayFeedbacks();
       Instantiate(playerPlatform, transform.position, transform.rotation);
       currentCorpses++;
-      UIManager.instance.levelTimer -= respawnCost;
+      if (UIManager.instance != null) UIManager.instance.levelTimer -= respawnCost;
       playerBody.simulated = false;
       transform.position = playerRespawnPoint.position;   
       playerBody.linearVelocity = Vector2.zero;
