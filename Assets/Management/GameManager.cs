@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
@@ -7,9 +8,16 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     public LevelContainer levels;
     public int currentLevel = 0;
-    public float levelTimer;
     public string endSceneName = "End";
     public bool GameOver;
+    
+    public int coinsCollected;
+    public float totalTimeTaken;
+    public int deaths;
+    
+    public TMP_Text coinsCollectedText;
+    public TMP_Text totalTimeTakenText;
+    public TMP_Text deathsText;
     public void Awake()
     {
         if (instance == null)
@@ -51,6 +59,11 @@ public class GameManager : MonoBehaviour
 
     public void NextLevel()
     {
+        if (SceneManager.GetActiveScene().buildIndex != 0)
+        {
+            totalTimeTaken += levels.levels[currentLevel].levelTimeLimit - UIManager.instance.levelTimer;
+        }
+      
         currentLevel++;
         SceneManager.LoadScene(currentLevel);
     }
