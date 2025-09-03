@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1703795402145804616}
   - component: {fileID: 3401316682875681006}
   m_Layer: 0
-  m_Name: Square
+  m_Name: FlagPole
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 7438157091615694134}
   - component: {fileID: 3669585196924570928}
   m_Layer: 0
-  m_Name: Triangle
+  m_Name: Flag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -267,3 +267,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d833323883e0abb4fa1a1cc6f1d99ccb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  flagSprite: {fileID: 3669585196924570928}

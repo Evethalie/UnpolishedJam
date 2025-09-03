@@ -9,6 +9,7 @@ public class UIManager : MonoBehaviour
 {
     public TMP_Text timerText;
     public TMP_Text corpseText;
+    public TMP_Text levelText;
     public float levelTimer;
     public static UIManager instance;
     public bool respawnTriggered;
@@ -30,14 +31,28 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
        // if(SceneManager.GetActiveScene().buildIndex == 0) return;
+       if(GameManager.instance.GameOver) return;
         levelTimer = GameManager.instance.levels.levels[GameManager.instance.currentLevel].levelTimeLimit;
     }
     void Update()
     {
         
       //  if(SceneManager.GetActiveScene().buildIndex == 0) return;
-        
+      if(GameManager.instance.GameOver) return;
         levelTimer -= Time.deltaTime;
+        if (levelText != null)
+        {
+            levelText.text = $"Level {GameManager.instance.currentLevel}";
+        }
+      
+        if (levelTimer <= (GameManager.instance.levels.levels[GameManager.instance.currentLevel].levelTimeLimit * 0.5))
+        {
+            timerText.color = Color.red;
+        }
+        else
+        {
+            timerText.color = Color.white;
+        }
         if (levelTimer <= 0f)
         {
             levelTimer = 0f;

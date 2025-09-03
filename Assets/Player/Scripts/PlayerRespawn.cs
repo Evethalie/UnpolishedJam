@@ -30,6 +30,7 @@ public class PlayerRespawn : MonoBehaviour
 
    private void Start()
    {
+      if(GameManager.instance.GameOver) return;
       maxCorpses = GameManager.instance.levels.levels[GameManager.instance.currentLevel].maxCorpses;
    }
    

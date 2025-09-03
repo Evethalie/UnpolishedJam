@@ -8,7 +8,8 @@ public class GameManager : MonoBehaviour
     public LevelContainer levels;
     public int currentLevel = 0;
     public float levelTimer;
-
+    public string endSceneName = "End";
+    public bool GameOver;
     public void Awake()
     {
         if (instance == null)
@@ -24,8 +25,28 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
+        if (currentLevel >= levels.levels.Length)
+        {
+            EndGame();
+            return;
+        }
+        GameOver = false;
         currentLevel++;
         SceneManager.LoadScene(levels.levels[1].level);
+    }
+
+    public void EndGame()
+    {
+        currentLevel = -1;
+        GameOver = true;
+        SceneManager.LoadScene(endSceneName);
+    }
+
+    public void GoToMainMenu()
+    {
+        GameOver = false;
+        currentLevel = 0;
+        SceneManager.LoadScene(0);
     }
 
     public void NextLevel()
@@ -39,6 +60,6 @@ public class GameManager : MonoBehaviour
 public struct Level
 {
     public int level;
-    public int maxCorpses;
-    [FormerlySerializedAs("maxTime")] public float levelTimeLimit;
+    public int maxCorpses; 
+    public float levelTimeLimit;
 }
