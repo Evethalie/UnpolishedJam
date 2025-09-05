@@ -43,6 +43,8 @@ public class PlayerRespawn : MonoBehaviour
    public void TotalRespawn()
    {
       GameManager.instance.deaths++;
+      GameManager.instance.coinsCollected -=
+         GameManager.instance.levels.levels[GameManager.instance.currentLevel].coins;
       deathFeedback.PlayFeedbacks();
       SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
    }

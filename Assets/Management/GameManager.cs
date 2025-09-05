@@ -193,4 +193,5 @@ public struct Level
     public int level;
     public int maxCorpses; 
     public float levelTimeLimit;
+    public int coins;
 }
