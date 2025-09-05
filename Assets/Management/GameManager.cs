@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -21,17 +23,19 @@ public class GameManager : MonoBehaviour
     public TMP_Text deathsText;
     
     public int   coinPointValue = 100;  
-    public float secondBonusValue = 10f; 
     public int   deathPenalty   = 50;
+    [SerializeField] private int  speedrunTimeBonusPoints = 50_000; // NEW: overall weight of time bonus
+    [SerializeField] private bool clampNonNegativeScore   = true;
     
-    public float secondPenaltyValue = 5f;
+   // public float secondPenaltyValue = 5f;
 
     
     private int finalScore;
     public  TMP_Text finalScoreText;
     
     private float runStartTime;
-
+    private bool runActive = false;
+    private HashSet<string> collectedCoinKeys = new HashSet<string>();
 
 
     public void Awake()
@@ -54,26 +58,35 @@ public class GameManager : MonoBehaviour
         deaths           = 0;
         totalTimeTaken   = 0f;
         finalScore       = 0;
+        collectedCoinKeys.Clear();
     }
 
 
     public void StartGame()
     {
-        if (currentLevel >= levels.levels.Length)
+        if (levels.levels == null || levels.levels.Length < 2)
         {
             EndGame();
             return;
         }
-        ResetRunStats();     
 
+        ResetRunStats();     
         GameOver = false;
-        currentLevel++;
-        runStartTime = Time.realtimeSinceStartup;
-        SceneManager.LoadScene(levels.levels[1].level);
+
+        currentLevel = 1;                           
+        runStartTime = Time.realtimeSinceStartup;   
+        runActive    = true;
+
+        SceneManager.LoadScene(levels.levels[currentLevel].level);
     }
 
     public void EndGame()
     {
+        if (!runActive)
+        {
+            runStartTime = Time.realtimeSinceStartup;
+            runActive = true;
+        }
         totalTimeTaken = Time.realtimeSinceStartup - runStartTime;
         currentLevel = -1;
         GameOver = true;
@@ -86,6 +99,20 @@ public class GameManager : MonoBehaviour
         {
             FindEndSceneTexts();
             StartDisplayingStats();
+        }
+        
+        else
+        {
+           
+            if (!runActive && levels.levels != null && levels.levels.Length > 1)
+            {
+                int firstPlayableBuildIndex = levels.levels[1].level; 
+                if (scene.buildIndex == firstPlayableBuildIndex)
+                {
+                    runStartTime = Time.realtimeSinceStartup;
+                    runActive = true;
+                }
+            }
         }
     }
     
@@ -151,15 +178,33 @@ public class GameManager : MonoBehaviour
     private void CalculateAndDisplayFinalScore()
     {
      
-        int   coinScore      = coinsCollected * coinPointValue;
-        float timePenalty    = totalTimeTaken * secondPenaltyValue;
-        int   deathScore     = deaths * deathPenalty;   // already negative
+        int coinScore = coinsCollected * coinPointValue; 
+        
+        float totalParTime = 0f;
+        if (levels?.levels != null && levels.levels.Length > 0) 
+        {
+            for (int i = 0; i < levels.levels.Length; i++) 
+            {
+                if (i == 0) continue; 
+                totalParTime += Mathf.Max(0f, levels.levels[i].levelTimeLimit); 
+            }
+        }
+        
+        float timeBonus = 0f; 
+        if (totalTimeTaken > 0f && totalParTime > 0f)
+        {
+            float ratio = totalParTime / totalTimeTaken; 
+            timeBonus = speedrunTimeBonusPoints * Mathf.Max(0f, ratio);
+        }
+
+      
+        int deathScore = deaths * deathPenalty; 
 
        
-        float rawScore = coinScore - timePenalty - deathScore;
+        float raw = coinScore + timeBonus - deathScore; 
 
-     
-        finalScore = Mathf.Max(0, Mathf.RoundToInt(rawScore));
+       
+        finalScore = Mathf.RoundToInt(clampNonNegativeScore ? Mathf.Max(0f, raw) : raw); // NEW
 
         
         if (finalScoreText == null)
@@ -167,7 +212,6 @@ public class GameManager : MonoBehaviour
 
         if (finalScoreText)
             finalScoreText.text = $"Final Score: {finalScore:N0}";
-
     }
 
 
@@ -182,8 +226,36 @@ public class GameManager : MonoBehaviour
 
     public void NextLevel()
     {
+        // if (levels.levels[currentLevel].coins > 0 &&
+        //     GameObject.FindObjectsByType<Coin>(FindObjectsSortMode.None).Length <= 0)
+        // {
+        //     coinsCollected += levels.levels[currentLevel].coins;
+        // }
         currentLevel++;
-        SceneManager.LoadScene(currentLevel);
+        if (currentLevel >= levels.levels.Length)
+        {
+            EndGame();
+            return;
+        }
+
+        
+        SceneManager.LoadScene(levels.levels[currentLevel].level);
+    }
+    
+    public bool HasCollected(string coinKey) => collectedCoinKeys.Contains(coinKey);
+
+    public bool MarkCollected(string coinKey)
+    {
+        bool added = collectedCoinKeys.Add(coinKey);
+        if (added) coinsCollected = collectedCoinKeys.Count;
+        return added;
+    }
+
+    public void ResetCoinsForCurrentScene()
+    {
+        string scenePrefix = SceneManager.GetActiveScene().name + "/";
+        collectedCoinKeys.RemoveWhere(k => k.StartsWith(scenePrefix, StringComparison.Ordinal));
+        coinsCollected = collectedCoinKeys.Count;
     }
 }
 
@@ -194,4 +266,5 @@ public struct Level
     public int maxCorpses; 
     public float levelTimeLimit;
     public int coins;
+    public bool coinCollected;
 }

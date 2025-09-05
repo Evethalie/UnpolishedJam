@@ -18,7 +18,8 @@ public class UIManager : MonoBehaviour
    // public GameObject PauseMenu;
    // public GameObject musicOffSprite;
    // public GameObject sfxOffSprite;
-   
+   public LevelContainer levels;
+   public int level;
 
     
     private void Awake()
@@ -39,20 +40,21 @@ public class UIManager : MonoBehaviour
         
       //  if(SceneManager.GetActiveScene().buildIndex == 0) return;
       if(GameManager.instance.GameOver) return;
+      if(SceneManager.GetActiveScene().buildIndex == 16 || SceneManager.GetActiveScene().buildIndex == 0) return;
         levelTimer -= Time.deltaTime;
         if (levelText != null)
         {
-            levelText.text = $"Level {GameManager.instance.currentLevel}";
+            levelText.text = $"Level {level}";
         }
       
-        if (levelTimer <= (GameManager.instance.levels.levels[GameManager.instance.currentLevel].levelTimeLimit * 0.5))
-        {
-            timerText.color = Color.red;
-        }
-        else
-        {
-            timerText.color = Color.white;
-        }
+         if (levelTimer <= levels.levels[level].levelTimeLimit * 0.5)
+         {
+             timerText.color = Color.red;
+         }
+         else
+         {
+             timerText.color = Color.white;
+         }
         if (levelTimer <= 0f)
         {
             levelTimer = 0f;
@@ -66,7 +68,7 @@ public class UIManager : MonoBehaviour
         }
 
         corpseText.text =
-            $"{playerRespawn.currentCorpses}/{GameManager.instance.levels.levels[GameManager.instance.currentLevel].maxCorpses} Corpses";
+            $"{playerRespawn.currentCorpses}/{levels.levels[level].maxCorpses} Corpses";
         // Regular update
         DisplayTime(levelTimer);
         UpdateHearts();

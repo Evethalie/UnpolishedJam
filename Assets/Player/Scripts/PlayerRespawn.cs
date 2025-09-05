@@ -31,6 +31,7 @@ public class PlayerRespawn : MonoBehaviour
    private void Start()
    {
       if(GameManager.instance.GameOver) return;
+      if(SceneManager.GetActiveScene().buildIndex == 16 || SceneManager.GetActiveScene().buildIndex == 0) return;
       maxCorpses = GameManager.instance.levels.levels[GameManager.instance.currentLevel].maxCorpses;
    }
    
@@ -43,8 +44,9 @@ public class PlayerRespawn : MonoBehaviour
    public void TotalRespawn()
    {
       GameManager.instance.deaths++;
-      GameManager.instance.coinsCollected -=
-         GameManager.instance.levels.levels[GameManager.instance.currentLevel].coins;
+      //GameManager.instance.coinsCollected -=
+       //  GameManager.instance.levels.levels[GameManager.instance.currentLevel].coins;
+       GameManager.instance.ResetCoinsForCurrentScene();
       deathFeedback.PlayFeedbacks();
       SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
    }

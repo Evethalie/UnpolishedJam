@@ -7,7 +7,7 @@ public class Coin : MonoBehaviour
     [SerializeField] private float frequency = 2f;
     
     private bool alreadyCollected = false; 
-
+    private string Key => $"{gameObject.scene.name}/{gameObject.name}@{transform.position}";
    
 
     private void Start()
@@ -38,8 +38,10 @@ public class Coin : MonoBehaviour
         if (alreadyCollected)           return;         
         if (!other.CompareTag("Player")) return;
 
-        alreadyCollected = true;                   
-        GameManager.instance.coinsCollected++;
+        alreadyCollected = true;          
+        GameManager.instance?.MarkCollected(Key);
+        //GameManager.instance.coinsCollected++;
+        
         Destroy(gameObject);            
 
     }
