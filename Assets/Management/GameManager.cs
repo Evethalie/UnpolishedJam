@@ -24,8 +24,14 @@ public class GameManager : MonoBehaviour
     public float secondBonusValue = 10f; 
     public int   deathPenalty   = 50;
     
+    public float secondPenaltyValue = 5f;
+
+    
     private int finalScore;
     public  TMP_Text finalScoreText;
+    
+    private float runStartTime;
+
 
 
     public void Awake()
@@ -41,6 +47,15 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
+    
+    private void ResetRunStats()
+    {
+        coinsCollected   = 0;
+        deaths           = 0;
+        totalTimeTaken   = 0f;
+        finalScore       = 0;
+    }
+
 
     public void StartGame()
     {
@@ -49,13 +64,17 @@ public class GameManager : MonoBehaviour
             EndGame();
             return;
         }
+        ResetRunStats();     
+
         GameOver = false;
         currentLevel++;
+        runStartTime = Time.realtimeSinceStartup;
         SceneManager.LoadScene(levels.levels[1].level);
     }
 
     public void EndGame()
     {
+        totalTimeTaken = Time.realtimeSinceStartup - runStartTime;
         currentLevel = -1;
         GameOver = true;
         SceneManager.LoadScene(endSceneName);
@@ -132,32 +151,30 @@ public class GameManager : MonoBehaviour
     private void CalculateAndDisplayFinalScore()
     {
      
-        float maxTimeAllowed = 0f;
-        foreach (var lvl in levels.levels)
-            maxTimeAllowed += lvl.levelTimeLimit;
-
-        
-        float secondsSaved = Mathf.Max(0f, maxTimeAllowed - totalTimeTaken);
-
-        
-        float rawScore =
-            coinsCollected * coinPointValue +
-            secondsSaved   * secondBonusValue -
-            deaths         * deathPenalty;
-
-        finalScore = Mathf.Max(0, Mathf.RoundToInt(rawScore));
+        int   coinScore      = coinsCollected * coinPointValue;
+        float timePenalty    = totalTimeTaken * secondPenaltyValue;
+        int   deathScore     = deaths * deathPenalty;   // already negative
 
        
+        float rawScore = coinScore - timePenalty - deathScore;
+
+     
+        finalScore = Mathf.Max(0, Mathf.RoundToInt(rawScore));
+
+        
         if (finalScoreText == null)
             finalScoreText = GameObject.Find("FinalScore")?.GetComponent<TMP_Text>();
 
         if (finalScoreText)
-            finalScoreText.text = "Final Score: " + finalScore.ToString("N0");
+            finalScoreText.text = $"Final Score: {finalScore:N0}";
+
     }
 
 
     public void GoToMainMenu()
     {
+        ResetRunStats();      
+
         GameOver = false;
         currentLevel = 0;
         SceneManager.LoadScene(0);
@@ -165,11 +182,6 @@ public class GameManager : MonoBehaviour
 
     public void NextLevel()
     {
-        if (SceneManager.GetActiveScene().buildIndex != 0)
-        {
-            totalTimeTaken += levels.levels[currentLevel].levelTimeLimit - UIManager.instance.levelTimer;
-        }
-      
         currentLevel++;
         SceneManager.LoadScene(currentLevel);
     }
