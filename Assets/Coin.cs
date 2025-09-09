@@ -5,6 +5,9 @@ public class Coin : MonoBehaviour
     private float timeOffset;
     [SerializeField] private float amplitude = 0.5f;    
     [SerializeField] private float frequency = 2f;
+    
+    private bool alreadyCollected = false; 
+    private string Key => $"{gameObject.scene.name}/{gameObject.name}@{transform.position}";
    
 
     private void Start()
@@ -14,7 +17,7 @@ public class Coin : MonoBehaviour
 
     private void Update()
     {
-        SineFloat();
+       SineFloat();
     }
 
     private void SineFloat()
@@ -32,10 +35,14 @@ public class Coin : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
-        {
-            GameManager.instance.coinsCollected += 1;
-            Destroy(gameObject);
-        }
+        if (alreadyCollected)           return;         
+        if (!other.CompareTag("Player")) return;
+
+        alreadyCollected = true;          
+        GameManager.instance?.MarkCollected(Key);
+        //GameManager.instance.coinsCollected++;
+        
+        Destroy(gameObject);            
+
     }
 }
